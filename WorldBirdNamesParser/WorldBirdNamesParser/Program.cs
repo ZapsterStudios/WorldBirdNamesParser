@@ -7,7 +7,7 @@ namespace WorldBirdNamesParser
 {
     class Program
     {
-        static readonly string file = "demo.xlsx";
+        static readonly string file = "Multiling IOC 9.2.xlsx";
         static readonly string path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
 
         static readonly List<List<string>> columns = new List<List<string>> {
