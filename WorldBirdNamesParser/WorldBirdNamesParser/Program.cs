@@ -24,14 +24,17 @@ namespace WorldBirdNamesParser
 
         static void Main(string[] args)
         {
+            // Make console use UTF-8 for outputting.
+            Console.OutputEncoding = System.Text.Encoding.UTF8;
+
             // Create new excel application and open file.
             Application excel = new Application();
             Workbook workbook = excel.Workbooks.Open(Path.Combine(path, file));
 
             // Prepare relation and row ids.
             int rowID = 0;
-            int orderID = 1;
-            int familyID = 1;
+            int orderID = 0;
+            int familyID = 0;
 
             // Prepare insertion text line.
             string insertion = "INSERT INTO species (`family_id`";
@@ -52,7 +55,8 @@ namespace WorldBirdNamesParser
                 // Check if row is order or family.
                 if (range.Cells[row, 2].Value2 != null) {
                     // Output order insertion line.
-                    Console.WriteLine($"INSERT INTO specie_orders (`class_id`, `scientific`) VALUES (1, '{range.Cells[row, 2].Value2}');");
+                    string text = range.Cells[row, 2].Value2;
+                    Console.WriteLine($"INSERT INTO specie_orders (`class_id`, `scientific`) VALUES (1, '{char.ToUpper(text[0]) + text.Substring(1).ToLower()}');");
 
                     // Up relation id and skip.
                     rowID = 0;
@@ -83,7 +87,7 @@ namespace WorldBirdNamesParser
                     if (range.Cells[row, col].Value2 == null) {
                         Console.Write(", NULL");
                     } else {
-                        Console.Write($", '{range.Cells[row, col].Value2}'");
+                        Console.Write($", '{range.Cells[row, col].Value2.Replace("'", "\\'")}'");
                     }
                 }
 
@@ -96,9 +100,6 @@ namespace WorldBirdNamesParser
                     Console.WriteLine(");");
                 }
             }
-
-            // Wait for user input.
-            Console.ReadKey();
         }
     }
 }
