@@ -53,7 +53,8 @@ namespace WorldBirdNamesParser
             for (int row = 4; row <= range.Rows.Count; row++)
             {
                 // Check if row is order or family.
-                if (range.Cells[row, 2].Value2 != null) {
+                if (range.Cells[row, 2].Value2 != null)
+                {
                     // Output order insertion line.
                     string text = range.Cells[row, 2].Value2;
                     Console.WriteLine($"INSERT INTO specie_orders (`class_id`, `scientific`) VALUES (1, '{char.ToUpper(text[0]) + text.Substring(1).ToLower()}');");
@@ -62,7 +63,9 @@ namespace WorldBirdNamesParser
                     rowID = 0;
                     orderID++;
                     continue;
-                } else if (range.Cells[row, 3].Value2 != null) {
+                }
+                else if (range.Cells[row, 3].Value2 != null)
+                {
                     // Output family insertion line.
                     Console.WriteLine($"INSERT INTO specie_families (`order_id`, `scientific`) VALUES ({orderID}, '{range.Cells[row, 3].Value2}');");
 
@@ -73,7 +76,8 @@ namespace WorldBirdNamesParser
                 }
 
                 // Output insertion line with family id if first row.
-                if (rowID == 0) {
+                if (rowID == 0)
+                {
                     Console.Write(insertion + $") VALUES ({familyID}");
                 }
 
@@ -84,9 +88,12 @@ namespace WorldBirdNamesParser
                     if (excluded.Contains(columns[rowID][(col - 4 - rowID) / 3])) continue;
 
                     // Output either null string or value.
-                    if (range.Cells[row, col].Value2 == null) {
+                    if (range.Cells[row, col].Value2 == null)
+                    {
                         Console.Write(", NULL");
-                    } else {
+                    }
+                    else
+                    {
                         Console.Write($", '{range.Cells[row, col].Value2.Replace("'", "\\'")}'");
                     }
                 }
@@ -95,11 +102,16 @@ namespace WorldBirdNamesParser
                 rowID++;
 
                 // Output ending insertion line if last row.
-                if (rowID >= 3) {
+                if (rowID >= 3)
+                {
                     rowID = 0;
                     Console.WriteLine(");");
                 }
             }
+
+            // Close worksbook and exit excel.
+            workbook.Close();
+            excel.Quit();
         }
     }
 }
