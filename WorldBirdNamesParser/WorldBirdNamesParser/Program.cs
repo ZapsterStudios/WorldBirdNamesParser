@@ -48,6 +48,10 @@ namespace WorldBirdNamesParser
                 }
             }
 
+            // Output UTF-8 encoding and aves class.
+            Console.WriteLine("SET NAMES utf8;");
+            Console.WriteLine("INSERT INTO specie_classes (`scientific`) VALUES ('Aves');");
+
             // Get sheet range and loop through rows.
             Range range = workbook.Sheets[1].UsedRange;
             for (int row = 4; row <= range.Rows.Count; row++)
