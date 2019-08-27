@@ -18,17 +18,12 @@ namespace WorldBirdNamesParser.models
 
         public List<KeyValuePair<string, string>> Locales { get; } = new List<KeyValuePair<string, string>>();
 
-        public Specie(int ID, int FamilyID, int SpecieID, string Scientific, string English)
+        public Specie(int ID, int FamilyID, int SpecieID, string Scientific)
         {
             this.ID = ID;
             this.FamilyID = FamilyID;
             this.SpecieID = (SpecieID == 0 ? "NULL" : ""+SpecieID);
             this.Scientific = Scientific.Replace("'", "\\'");
-
-            if (English != null && English != "")
-            {
-                this.Locales.Add(new KeyValuePair<string, string>("english_name", English.Replace("'", "\\'")));
-            }
         }
 
         public void Output()

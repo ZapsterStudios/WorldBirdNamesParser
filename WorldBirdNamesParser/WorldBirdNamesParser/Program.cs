@@ -91,11 +91,8 @@ namespace WorldBirdNamesParser
                             string shortSpecieName = specie.SelectSingleNode("latin_name").InnerText;
                             string fullSpecieName = genusName + " " + shortSpecieName;
 
-                            // Get specie english name.
-                            string englishSpecieName = specie.SelectSingleNode("english_name").InnerText;
-
                             // Add new specie to list.
-                            this.Species.Add(new Specie(specieID, familyID, 0, fullSpecieName, englishSpecieName));
+                            this.Species.Add(new Specie(specieID, familyID, 0, fullSpecieName));
 
                             // Loop through all sub-specie nodes.
                             foreach (XmlNode subspecie in specie.SelectNodes("subspecies"))
@@ -105,7 +102,7 @@ namespace WorldBirdNamesParser
                                 string subSpecieName = subspecie.SelectSingleNode("latin_name").InnerText;
 
                                 // Add new sub-specie to list.
-                                this.Species.Add(new Specie(subSpecieID, familyID, specieID, fullSpecieName + " " + subSpecieName, null));
+                                this.Species.Add(new Specie(subSpecieID, familyID, specieID, fullSpecieName + " " + subSpecieName));
                             }
                         }
                     }
