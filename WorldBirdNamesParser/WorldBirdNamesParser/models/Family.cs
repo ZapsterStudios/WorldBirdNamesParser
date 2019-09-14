@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace WorldBirdNamesParser.models
 {
@@ -26,7 +22,7 @@ namespace WorldBirdNamesParser.models
 
         public void Output()
         {
-            Console.WriteLine($"INSERT INTO specie_families (`id`, `order_id`, `scientific`, `english_name`) VALUES ({this.ID}, {this.OrderID}, '{this.Scientific}', '{this.English}');");
+            Console.WriteLine($"INSERT INTO specie_families (`order_id`, `scientific`, `english_name`) VALUES ((@orderOffset + {this.OrderID}), '{this.Scientific}', '{this.English}');");
         }
     }
 }

@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="models\Genus.cs" />
     <Compile Include="models\Family.cs" />
     <Compile Include="models\Order.cs" />
     <Compile Include="models\Specie.cs" />

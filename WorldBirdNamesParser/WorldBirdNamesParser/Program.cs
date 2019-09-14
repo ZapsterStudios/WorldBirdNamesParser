@@ -10,6 +10,7 @@ namespace WorldBirdNamesParser
     {
         readonly List<Order> Orders = new List<Order>();
         readonly List<Family> Families = new List<Family>();
+        readonly List<Genus> Genera = new List<Genus>();
         readonly List<Specie> Species = new List<Specie>();
 
         readonly List<List<string>> locales = new List<List<string>> {
@@ -57,7 +58,7 @@ namespace WorldBirdNamesParser
                 orderName = orderName.Substring(0, 1).ToUpper() + orderName.Substring(1);
 
                 // Add new order to list.
-                this.Orders.Add(new Order(orderID, 1, orderName));
+                this.Orders.Add(new Order(orderID, orderName));
 
                 // Output status message.
                 Console.WriteLine($"-- Processed {orderID} of {count} orders");
@@ -78,8 +79,14 @@ namespace WorldBirdNamesParser
                     // Loop through all genus nodes.
                     foreach (XmlNode genus in family.SelectNodes("genus"))
                     {
-                        // Get genus prefix name.
+                        // Generate id for genus.
+                        int genusID = this.Genera.Count + 1;
+
+                        // Get genus latin name;
                         string genusName = genus.SelectSingleNode("latin_name").InnerText;
+
+                        // Add new genus to list.
+                        this.Genera.Add(new Genus(genusID, familyID, genusName));
 
                         // Loop through all specie nodes.
                         foreach (XmlNode specie in genus.SelectNodes("species"))
@@ -92,7 +99,7 @@ namespace WorldBirdNamesParser
                             string fullSpecieName = genusName + " " + shortSpecieName;
 
                             // Add new specie to list.
-                            this.Species.Add(new Specie(specieID, familyID, 0, fullSpecieName));
+                            this.Species.Add(new Specie(specieID, genusID, 0, fullSpecieName));
 
                             // Loop through all sub-specie nodes.
                             foreach (XmlNode subspecie in specie.SelectNodes("subspecies"))
@@ -102,7 +109,7 @@ namespace WorldBirdNamesParser
                                 string subSpecieName = subspecie.SelectSingleNode("latin_name").InnerText;
 
                                 // Add new sub-specie to list.
-                                this.Species.Add(new Specie(subSpecieID, familyID, specieID, fullSpecieName + " " + subSpecieName));
+                                this.Species.Add(new Specie(subSpecieID, genusID, specieID, fullSpecieName + " " + subSpecieName));
                             }
                         }
                     }
@@ -193,13 +200,27 @@ namespace WorldBirdNamesParser
             // Output starting messages.
             Console.WriteLine("-- OUTPUT --");
 
-            // Output charset and default class.
+            // Output SQL query charset.
             Console.WriteLine("SET NAMES utf8;");
-            Console.WriteLine("INSERT INTO specie_classes (`scientific`) VALUES ('Aves');");
+
+            // Output phylum creation row.
+            Console.WriteLine("INSERT INTO specie_phyla (`scientific`) SELECT 'Chordata' WHERE NOT EXISTS (SELECT id FROM specie_phyla WHERE scientific = 'Chordata');");
+
+            // Output class creation row.
+            Console.Write("INSERT INTO specie_classes (`phylum_id`, `scientific`) SELECT (SELECT id from specie_phyla WHERE scientific = 'Chordata'), 'Aves' ");
+            Console.WriteLine("WHERE NOT EXISTS (SELECT id FROM specie_classes WHERE scientific = 'Aves');");
+
+            // Save table auto increment offsets.
+            Console.WriteLine("SET @classIndex = (SELECT id FROM specie_classes WHERE scientific = 'Aves');");
+            Console.WriteLine("SET @orderOffset = ((SELECT `AUTO_INCREMENT` FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = database() AND TABLE_NAME = 'specie_orders') - 1);");
+            Console.WriteLine("SET @familyOffset = ((SELECT `AUTO_INCREMENT` FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = database() AND TABLE_NAME = 'specie_families') - 1);");
+            Console.WriteLine("SET @genusOffset = ((SELECT `AUTO_INCREMENT` FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = database() AND TABLE_NAME = 'specie_genera') - 1);");
+            Console.WriteLine("SET @specieOffset = ((SELECT `AUTO_INCREMENT` FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = database() AND TABLE_NAME = 'species') - 1);");
 
             // Output the order, family, and specie rows.
             foreach (Order order in this.Orders) order.Output();
             foreach (Family family in this.Families) family.Output();
+            foreach (Genus genus in this.Genera) genus.Output();
             foreach (Specie specie in this.Species) specie.Output();
         }
     }
